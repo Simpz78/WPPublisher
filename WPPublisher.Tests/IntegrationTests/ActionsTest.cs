@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WPPublisher.Controller;
+using WPPublisher.Model;
 using Xunit;
 
-namespace WPPublisher.Tests.UnitTests
+namespace WPPublisher.Tests.IntegrationTests
 {
     /// <summary>
     /// Classe di supporto alla classe di test per inizializzare ciò che serve alla classe stessa
@@ -42,6 +43,14 @@ namespace WPPublisher.Tests.UnitTests
         {
             this.startup = startup;
         }
-    
+
+        [Fact]
+        public void PostMessage_OK()
+        {
+            WPPost testPost = new WPPost("Test Title", "Test Content " + DateTime.Now.ToString());
+            int response = startup.Actions.PostMessage(testPost);
+
+            Assert.Equal(1, response);
+        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,8 @@ namespace WPPublisher.Model
     /// </summary>
     public class WPPost
     {
-        private string Title { get; }
-        private string Content { get; }
+        public string Title { get; }
+        public string Content { get; }
     
         public WPPost(string title, string content)
         {

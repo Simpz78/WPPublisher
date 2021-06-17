@@ -8,16 +8,19 @@ namespace WPPublisher
     {
         public int PostAndPublishMessage(WPPost post)
         {
+            int response = 0;
             // Chiamata al controller per l'accodamento al rabbit
-            WPPostController.EnqueuePost();
+            response = PostMessage(post);
             // Chiamata al controller per la pubblicazione effettiva del messaggio
 
-            return 0;
+            return response;
         }
 
         public int PostMessage(WPPost post)
         {
-            return 0;
+            int response = WPPostController.EnqueuePost(post);
+
+            return response;
         }
 
         public int PublishMessage(int idMessage)
