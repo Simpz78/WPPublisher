@@ -6,7 +6,18 @@ using System.Threading.Tasks;
 
 namespace WPPublisher.Model
 {
-    class WPPost
+    /// <summary>
+    /// Classe per un post di WordPress
+    /// </summary>
+    public class WPPost
     {
+        private string Title { get; }
+        private string Content { get; }
+    
+        public WPPost(string title, string content)
+        {
+            Title = title;
+            Content = content;
+        }
     }
 }
