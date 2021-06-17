@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace WPPublisher.Controller
 {
-    internal class WPPostController
+    internal static class WPPostController
     {
-        public void EnqueuePost()
+        public static void EnqueuePost()
         { }
 
-        public void PublishPost()
+        public static void PublishPost()
         { }
     }
 }

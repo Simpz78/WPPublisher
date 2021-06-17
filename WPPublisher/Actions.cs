@@ -6,13 +6,22 @@ namespace WPPublisher
 {
     public class Actions
     {
-        private WPPostController _WPPostController = new WPPostController();
+        public int PostAndPublishMessage(WPPost post)
+        {
+            // Chiamata al controller per l'accodamento al rabbit
+            WPPostController.EnqueuePost();
+            // Chiamata al controller per la pubblicazione effettiva del messaggio
+
+            return 0;
+        }
 
         public int PostMessage(WPPost post)
         {
-            // Chiamata al controller per l'accodamento al rabbit
-             
-            // Chiamata al controller per la pubblicazione effettiva del messaggio
+            return 0;
+        }
+
+        public int PublishMessage(int idMessage)
+        {
 
             return 0;
         }
