@@ -18,6 +18,9 @@ namespace WPPublisher.API.Controllers
     {
         private readonly ILogger<ApiController> _logger;
 
+        private readonly string UserRestRoute = "?rest_route=/wp/v2/users";
+        private readonly string PostsRestRoute = "?rest_route=/wp/v2/posts";
+
         public ApiController(ILogger<ApiController> logger)
         {
             _logger = logger;
@@ -31,8 +34,8 @@ namespace WPPublisher.API.Controllers
             {
                 var client = new RestClient("http://localhost:8080");
                 //client.Authenticator = new HttpBasicAuthenticator("test", "test");
-
-                var request = new RestRequest("?rest_route=/wp/v2/users&username=" + username, Method.GET);
+                string usernameQuery = "&username=" + username;
+                var request = new RestRequest(UserRestRoute + usernameQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
                 if (response != null)
                 {
@@ -50,22 +53,17 @@ namespace WPPublisher.API.Controllers
         }
 
         [HttpGet("GetPost/{idPost}")]
-        public WPPost GetPost(string idPost)
+        public string GetPost(string idPost)
         {
-            WPPost result = null;
+            string result = null;
             try
             {
                 var client = new RestClient("http://localhost:8080");
                 //client.Authenticator = new HttpBasicAuthenticator("test", "test");
-
-                var request = new RestRequest("?rest_route=/wp/v2/posts" + idPost, Method.GET);
+                string idPostQuery = "/" + idPost;
+                var request = new RestRequest(PostsRestRoute + idPostQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
-
-                // gestione errore
-                if (response.Content != null)
-                {
-                    result = WPPostController.GetWPPostFromJObject((JObject)JArray.Parse(response.Content)[0]);
-                }
+                result = response.Content;
             }
             catch (Exception ex)
             {
@@ -76,23 +74,23 @@ namespace WPPublisher.API.Controllers
             return result;
         }
 
-        [HttpGet("GetPost/{author}/{status?}")]
-        public IEnumerable<WPPost> GetPosts(int author, string status)
+        [HttpGet("GetPosts/{author}")]
+        public string GetPosts(int author, string status = null)
         {
-            IEnumerable<WPPost> result;
+            string result;
             try
             {
                 var client = new RestClient("http://localhost:8080");
-                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+                client.Authenticator = new HttpBasicAuthenticator("test", "test");
+                string postQuery = "&author=" + author;
+                if (!string.IsNullOrEmpty(status))
+                    postQuery += "&status=" + status;
 
-                var request = new RestRequest("?rest_route=/wp/v2/posts", Method.GET);
-                request.AddParameter("author", author);
-                if (string.IsNullOrEmpty(status))
-                    request.AddParameter("status", status);
+                var request = new RestRequest(PostsRestRoute + postQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
-
-                JArray objArr = JArray.Parse(response.Content);
-                result = objArr.Select(o => WPPostController.GetWPPostFromJObject((JObject)o)).ToList();
+                result = response.Content;
+                //JArray objArr = JArray.Parse(response.Content);
+                //result = objArr.Select(o => WPPostController.GetWPPostFromJObject((JObject)o)).ToList();
             }
             catch (Exception ex)
             {

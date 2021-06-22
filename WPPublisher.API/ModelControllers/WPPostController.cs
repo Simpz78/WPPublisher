@@ -11,8 +11,8 @@ namespace WPPublisher.API.ModelControllers
     {
         public static WPPost GetWPPostFromJObject(JObject obj)
         {
-            string title = obj["title"].ToString();
-            string content = obj["content"].ToString();
+            string title = obj["title"]["rendered"].ToString();
+            string content = obj["content"]["rendered"].ToString();
             int idPost = int.Parse(obj["id"].ToString());
             string status = obj["status"].ToString();
 
