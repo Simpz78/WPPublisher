@@ -4,10 +4,6 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WPPublisher.Model;
 
 namespace WPPublisher.API.Controllers
 {
@@ -16,6 +12,9 @@ namespace WPPublisher.API.Controllers
     public class ApiController : ControllerBase
     {
         private readonly ILogger<ApiController> _logger;
+
+        private readonly string UserRestRoute = "?rest_route=/wp/v2/users";
+        private readonly string PostsRestRoute = "?rest_route=/wp/v2/posts";
 
         public ApiController(ILogger<ApiController> logger)
         {
@@ -30,8 +29,8 @@ namespace WPPublisher.API.Controllers
             {
                 var client = new RestClient("http://localhost:8080");
                 //client.Authenticator = new HttpBasicAuthenticator("test", "test");
-
-                var request = new RestRequest("?rest_route=/wp/v2/users&username=" + username, Method.GET);
+                string usernameQuery = "&username=" + username;
+                var request = new RestRequest(UserRestRoute + usernameQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
                 if (response != null)
                 {
@@ -49,30 +48,52 @@ namespace WPPublisher.API.Controllers
         }
 
         [HttpGet("GetPost/{idPost}")]
-        public WPPost GetPost(string idPost)
+        public string GetPost(string idPost)
         {
-            // author, status
-            var client = new RestClient("http://localhost:8080");
-            //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+            string result = null;
+            try
+            {
+                var client = new RestClient("http://localhost:8080");
+                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+                string idPostQuery = "/" + idPost;
+                var request = new RestRequest(PostsRestRoute + idPostQuery, Method.GET);
+                IRestResponse response = client.Execute(request);
+                result = response.Content;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result = null;
+            }
 
-            var request = new RestRequest("?rest_route=/wp/v2/posts" + idPost, Method.GET);
-            IRestResponse response = client.Execute(request);
-
-            return null;
+            return result;
         }
 
-        [HttpGet("GetPost/{author}/{status}")]
-        public IEnumerable<WPPost> GetPosts(int author, string status)
+        [HttpGet("GetPosts/{author}")]
+        public string GetPosts(int author, string status = null)
         {
-            var client = new RestClient("http://localhost:8080");
-            //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+            string result;
+            try
+            {
+                var client = new RestClient("http://localhost:8080");
+                client.Authenticator = new HttpBasicAuthenticator("test", "test");
+                string postQuery = "&author=" + author;
+                if (!string.IsNullOrEmpty(status))
+                    postQuery += "&status=" + status;
 
-            var request = new RestRequest("?rest_route=/wp/v2/posts", Method.GET);
-            request.AddParameter("author", author);
-            request.AddParameter("status", status);
-            IRestResponse response = client.Execute(request);
+                var request = new RestRequest(PostsRestRoute + postQuery, Method.GET);
+                IRestResponse response = client.Execute(request);
+                result = response.Content;
+                //JArray objArr = JArray.Parse(response.Content);
+                //result = objArr.Select(o => WPPostController.GetWPPostFromJObject((JObject)o)).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result = null;
+            }
 
-            return null;
+            return result;
         }
     }
 }
