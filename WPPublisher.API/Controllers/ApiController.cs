@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WPPublisher.API.ModelControllers;
 using WPPublisher.Model;
 
 namespace WPPublisher.API.Controllers
@@ -51,28 +52,55 @@ namespace WPPublisher.API.Controllers
         [HttpGet("GetPost/{idPost}")]
         public WPPost GetPost(string idPost)
         {
-            // author, status
-            var client = new RestClient("http://localhost:8080");
-            //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+            WPPost result = null;
+            try
+            {
+                var client = new RestClient("http://localhost:8080");
+                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
 
-            var request = new RestRequest("?rest_route=/wp/v2/posts" + idPost, Method.GET);
-            IRestResponse response = client.Execute(request);
+                var request = new RestRequest("?rest_route=/wp/v2/posts" + idPost, Method.GET);
+                IRestResponse response = client.Execute(request);
 
-            return null;
+                // gestione errore
+                if (response.Content != null)
+                {
+                    result = WPPostController.GetWPPostFromJObject((JObject)JArray.Parse(response.Content)[0]);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result = null;
+            }
+
+            return result;
         }
 
-        [HttpGet("GetPost/{author}/{status}")]
+        [HttpGet("GetPost/{author}/{status?}")]
         public IEnumerable<WPPost> GetPosts(int author, string status)
         {
-            var client = new RestClient("http://localhost:8080");
-            //client.Authenticator = new HttpBasicAuthenticator("test", "test");
+            IEnumerable<WPPost> result;
+            try
+            {
+                var client = new RestClient("http://localhost:8080");
+                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
 
-            var request = new RestRequest("?rest_route=/wp/v2/posts", Method.GET);
-            request.AddParameter("author", author);
-            request.AddParameter("status", status);
-            IRestResponse response = client.Execute(request);
+                var request = new RestRequest("?rest_route=/wp/v2/posts", Method.GET);
+                request.AddParameter("author", author);
+                if (string.IsNullOrEmpty(status))
+                    request.AddParameter("status", status);
+                IRestResponse response = client.Execute(request);
 
-            return null;
+                JArray objArr = JArray.Parse(response.Content);
+                result = objArr.Select(o => WPPostController.GetWPPostFromJObject((JObject)o)).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result = null;
+            }
+
+            return result;
         }
     }
 }
