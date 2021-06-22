@@ -4,11 +4,6 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using RestSharp.Authenticators;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using WPPublisher.API.ModelControllers;
-using WPPublisher.Model;
 
 namespace WPPublisher.API.Controllers
 {
