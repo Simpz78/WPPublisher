@@ -42,6 +42,7 @@ namespace WPPublisher.API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                result = 0;
             }
             return result;
         }
