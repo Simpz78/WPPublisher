@@ -31,6 +31,7 @@ namespace WPPublisher.API
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WPPublisher.API", Version = "v1" });
+                c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
         }
 
@@ -42,6 +43,7 @@ namespace WPPublisher.API
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WPPublisher.API v1"));
+                
             }
 
             app.UseHttpsRedirection();

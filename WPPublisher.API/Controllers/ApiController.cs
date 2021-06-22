@@ -22,7 +22,7 @@ namespace WPPublisher.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [HttpGet("GetUserId/{username}")]
         public int GetUserId(string username)
         {
             int result = 0;
@@ -31,11 +31,12 @@ namespace WPPublisher.API.Controllers
                 var client = new RestClient("http://localhost:8080");
                 //client.Authenticator = new HttpBasicAuthenticator("test", "test");
 
-                var request = new RestRequest("?rest_route=/wp/v2/users?username=" + username, Method.GET);
+                var request = new RestRequest("?rest_route=/wp/v2/users&username=" + username, Method.GET);
                 IRestResponse response = client.Execute(request);
                 if (response != null)
                 {
-                    JObject obj = (JObject)JToken.Parse(response.Content);
+                    JArray objArr = JArray.Parse(response.Content);
+                    JObject obj = (JObject)objArr[0];
                     result = int.Parse(obj["id"].ToString());
                 }
             }
@@ -47,7 +48,7 @@ namespace WPPublisher.API.Controllers
             return result;
         }
 
-        [HttpGet]
+        [HttpGet("GetPost/{idPost}")]
         public WPPost GetPost(string idPost)
         {
             // author, status
@@ -60,7 +61,7 @@ namespace WPPublisher.API.Controllers
             return null;
         }
 
-        [HttpGet]
+        [HttpGet("GetPost/{author}/{status}")]
         public IEnumerable<WPPost> GetPosts(int author, string status)
         {
             var client = new RestClient("http://localhost:8080");
