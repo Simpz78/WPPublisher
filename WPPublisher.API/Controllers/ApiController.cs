@@ -21,6 +21,42 @@ namespace WPPublisher.API.Controllers
             _logger = logger;
         }
 
+        [HttpPost("PublishPost/{idPost}")]
+        public int PublishPost(int idPost)
+        {
+            int result = 0;
+            try
+            {
+                var client = new RestClient("http://localhost:8080");
+                client.Authenticator = new HttpBasicAuthenticator("test", "test");
+                string idPostQuery = "/" + idPost;
+                var request = new RestRequest(PostsRestRoute + idPostQuery, Method.POST);
+                request.AddParameter("status", "publish");
+                IRestResponse response = client.Execute(request);
+                if (response != null)
+                {
+                    JArray objArr = JArray.Parse(response.Content);
+                    JObject obj = (JObject)objArr[0];
+                    // se ritorna un id allora non ci sono stati errori
+                    if (int.TryParse(obj["id"].ToString(), out int id))
+                    {
+                        string status = obj["status"].ToString();
+                        if (id == idPost && status.ToLower() == "publish")
+                            result = 1;
+                    }
+                    else
+                        result = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                result = 0;
+            }
+            return result;
+
+        }
+
         [HttpGet("GetUserId/{username}")]
         public int GetUserId(string username)
         {
