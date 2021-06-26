@@ -64,7 +64,6 @@ namespace WPPublisher.API.Controllers
             try
             {
                 var client = new RestClient("http://localhost:8080");
-                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
                 string usernameQuery = "&username=" + username;
                 var request = new RestRequest(UserRestRoute + usernameQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
@@ -90,7 +89,6 @@ namespace WPPublisher.API.Controllers
             try
             {
                 var client = new RestClient("http://localhost:8080");
-                //client.Authenticator = new HttpBasicAuthenticator("test", "test");
                 string idPostQuery = "/" + idPost;
                 var request = new RestRequest(PostsRestRoute + idPostQuery, Method.GET);
                 IRestResponse response = client.Execute(request);
