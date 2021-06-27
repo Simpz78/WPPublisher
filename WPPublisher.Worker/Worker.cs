@@ -21,8 +21,8 @@ namespace WPPublisher.Worker
         private readonly ILogger<Worker> _logger;
 
         private static string _queueServer = "localhost";
-        private static string _queueExchange = "testWPPost";
-        private static string _queueName = "testWPPost";
+        private static string _queueExchangePostMessage = "testWPPost";
+        private static string _queueNamePostMessage = "testWPPost";
 
         public Worker(ILogger<Worker> logger)
         {
@@ -34,13 +34,13 @@ namespace WPPublisher.Worker
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                ConsumeMessage();
+                PostMessageQueueConsumer();
                 _logger.LogInformation("End Consume Message");
                 await Task.Delay(1000, stoppingToken);
             }
         }
 
-        private void ConsumeMessage()
+        private void PostMessageQueueConsumer()
         {
             var factory = new ConnectionFactory() { HostName = _queueServer };
 
@@ -48,8 +48,8 @@ namespace WPPublisher.Worker
             {
                 using (var channel = connection.CreateModel())
                 {
-                    channel.ExchangeDeclarePassive(_queueExchange);
-                    channel.QueueDeclarePassive(_queueName);
+                    channel.ExchangeDeclarePassive(_queueExchangePostMessage);
+                    channel.QueueDeclarePassive(_queueNamePostMessage);
                     var consumer = new EventingBasicConsumer(channel);
                     consumer.Received += (bc, ea) =>
                     {
@@ -68,7 +68,7 @@ namespace WPPublisher.Worker
                             //Console.WriteLine("RabbitMQ is closed!");
                         }
                     };
-                    channel.BasicConsume(queue: _queueName, autoAck: true, consumer: consumer);
+                    channel.BasicConsume(queue: _queueNamePostMessage, autoAck: true, consumer: consumer);
                 }
 
                 connection.Close();
