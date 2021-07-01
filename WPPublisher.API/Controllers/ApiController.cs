@@ -48,7 +48,7 @@ namespace WPPublisher.API.Controllers
                             result = 1;
                     }
                     else
-                        result = 0;
+                        result = 0; 
                 }
             }
             catch (Exception ex)
