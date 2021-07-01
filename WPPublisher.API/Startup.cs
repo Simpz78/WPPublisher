@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WPPublisher.API.Configuration;
 
 namespace WPPublisher.API
 {
@@ -26,13 +27,15 @@ namespace WPPublisher.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.Configure<Auth>(Configuration.GetSection("Auth"));
+            services.Configure<WordpressRestApi>(Configuration.GetSection("WordpressRestApi"));
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WPPublisher.API", Version = "v1" });
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
