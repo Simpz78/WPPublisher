@@ -20,11 +20,27 @@
       "durable": true,
       "auto_delete": false,
       "arguments": { "x-queue-type": "classic" }
+    },
+	{
+      "name": "modifyWPPost",
+      "vhost": "/",
+      "durable": true,
+      "auto_delete": false,
+      "arguments": { "x-queue-type": "classic" }
     }
   ],
   "exchanges": [
     {
       "name": "testWPPost",
+      "vhost": "/",
+      "type": "fanout",
+      "durable": true,
+      "auto_delete": false,
+      "internal": false,
+      "arguments": {}
+    },
+	{
+      "name": "ex_modifyWPPost",
       "vhost": "/",
       "type": "fanout",
       "durable": true,
@@ -38,6 +54,14 @@
       "source": "testWPPost",
       "vhost": "/",
       "destination": "testWPPost",
+      "destination_type": "queue",
+      "routing_key": "",
+      "arguments": {}
+    },
+	{
+      "source": "ex_modifyWPPost",
+      "vhost": "/",
+      "destination": "modifyWPPost",
       "destination_type": "queue",
       "routing_key": "",
       "arguments": {}
